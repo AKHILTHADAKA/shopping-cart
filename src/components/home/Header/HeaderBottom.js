@@ -14,6 +14,7 @@ const HeaderBottom = () => {
   const [showUser, setShowUser] = useState(false);
   const navigate = useNavigate();
   const ref = useRef();
+  
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
       if (ref.current.contains(e.target)) {
@@ -27,9 +28,14 @@ const HeaderBottom = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState("Search here");
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
+  };
+
+  const toggleSearchBar = () => {
+    setShowSearchBar(!showSearchBar);
   };
 
   useEffect(() => {
@@ -38,6 +44,18 @@ const HeaderBottom = () => {
     );
     setFilteredProducts(filtered);
   }, [searchQuery]);
+
+  // Focus handler to change the placeholder text to "Searching" and activate the input
+  const handleFocus = () => {
+    setPlaceholderText("Searching...");
+  };
+
+  // Focus out handler to reset placeholder to the default if query is empty
+  const handleBlur = () => {
+    if (searchQuery === "") {
+      setPlaceholderText("Search here");
+    }
+  };
 
   return (
     <div className="w-full bg-[#F5F5F3] relative">
@@ -79,19 +97,41 @@ const HeaderBottom = () => {
               </motion.ul>
             )}
           </div>
+
           <div className="relative w-full lg:w-[600px] h-[50px] text-base text-primeColor bg-white flex items-center gap-2 justify-between px-6 rounded-xl">
             <input
-              className="flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
+              className={`flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px] transition-all duration-300 ease-in-out ${
+                showSearchBar ? "block" : "hidden"
+              }`}
               type="text"
               onChange={handleSearch}
               value={searchQuery}
-              placeholder="Search your products here"
+              placeholder={placeholderText}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
-            <FaSearch className="w-5 h-5" />
-            {searchQuery && (
-              <div
-                className={`w-full mx-auto h-96 bg-white top-16 absolute left-0 z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
+            
+            {/* Show search icon when search bar is hidden */}
+            {!showSearchBar && (
+              <FaSearch className="w-5 h-5 cursor-pointer" onClick={toggleSearchBar} />
+            )}
+
+            {/* Show close icon when search bar is visible */}
+            {showSearchBar && (
+              <button
+                className="w-5 h-5 text-gray-600"
+                onClick={() => {
+                  setShowSearchBar(false);
+                  setSearchQuery("");
+                  setPlaceholderText("Search here");
+                }}
               >
+                X
+              </button>
+            )}
+
+            {searchQuery && showSearchBar && (
+              <div className="w-full mx-auto h-96 bg-white top-16 absolute left-0 z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer">
                 {searchQuery &&
                   filteredProducts.map((item) => (
                     <div
@@ -131,6 +171,7 @@ const HeaderBottom = () => {
               </div>
             )}
           </div>
+
           <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative">
             <div onClick={() => setShowUser(!showUser)} className="flex">
               <FaUser />
