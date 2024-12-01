@@ -28,15 +28,10 @@ const HeaderBottom = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [showSearchBar, setShowSearchBar] = useState(false);
   const [placeholderText, setPlaceholderText] = useState("Search here");
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
-  };
-
-  const toggleSearchBar = () => {
-    setShowSearchBar(!showSearchBar);
   };
 
   useEffect(() => {
@@ -99,7 +94,7 @@ const HeaderBottom = () => {
 
           <div className="relative w-full lg:w-[600px] h-[50px] text-base text-primeColor bg-white flex items-center gap-2 justify-between px-6 rounded-xl">
             <input
-              className={`flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px] transition-all duration-300 ease-in-out ${showSearchBar ? "block" : "hidden"}`}
+              className="flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px] transition-all duration-300 ease-in-out"
               type="text"
               onChange={handleSearch}
               value={searchQuery}
@@ -107,27 +102,8 @@ const HeaderBottom = () => {
               onFocus={handleFocus}
               onBlur={handleBlur}
             />
-            
-            {/* Show search icon when search bar is hidden */}
-            {!showSearchBar && (
-              <FaSearch className="w-5 h-5 cursor-pointer" onClick={toggleSearchBar} />
-            )}
-
-            {/* Show close icon when search bar is visible */}
-            {showSearchBar && (
-              <button
-                className="w-5 h-5 text-gray-600"
-                onClick={() => {
-                  setShowSearchBar(false);
-                  setSearchQuery("");
-                  setPlaceholderText("Search here");
-                }}
-              >
-                X
-              </button>
-            )}
-
-            {searchQuery && showSearchBar && (
+            <FaSearch className="w-5 h-5 cursor-pointer" />
+            {searchQuery && (
               <div className="w-full mx-auto h-96 bg-white top-16 absolute left-0 z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer">
                 {filteredProducts.map((item) => (
                   <div
@@ -135,8 +111,6 @@ const HeaderBottom = () => {
                       navigate(`/product/${item.productName.toLowerCase().split(" ").join("")}`, {
                         state: { item },
                       });
-                      setShowSearchBar(false);
-                      setSearchQuery("");
                     }}
                     key={item._id}
                     className="max-w-[600px] h-28 bg-gray-100 mb-3 flex items-center gap-3"
